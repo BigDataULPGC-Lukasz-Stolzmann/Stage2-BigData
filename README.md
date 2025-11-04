@@ -101,46 +101,58 @@ cargo build --release
 
 2. **Start infrastructure:**
 ```bash
+cd services
 docker-compose up redis postgres
 ```
 
 3. **Run services (in separate terminals):**
 ```bash
-cd ingestion-service && cargo run
-cd indexing-service && cargo run
-cd search-service && cargo run
-cd control-module && cargo run
+cd services/ingestion-service && cargo run
+cd services/indexing-service && cargo run
+cd services/search-service && cargo run
+cd services/control-module && cargo run
 ```
 
 ## Development
 
 ### Project Structure
 ```
-services/
-├── ingestion-service/     # Downloads books to datalake
-├── indexing-service/      # Processes and indexes books
-├── search-service/        # Search API endpoints
-├── control-module/        # Orchestration logic
-└── docker-compose.yml     # Service configuration
+BigDataProject/
+├── services/              # All microservices
+│   ├── ingestion-service/ # Downloads books to datalake
+│   ├── indexing-service/  # Processes and indexes books
+│   ├── search-service/    # Search API endpoints
+│   ├── control-module/    # Orchestration logic
+│   └── docker-compose.yml # Service configuration
+├── scripts/               # Testing and benchmarking
+│   ├── run_tests.sh      # Comprehensive test runner
+│   ├── run_benchmarks.sh # Performance benchmarking
+│   └── generate_html_reports.sh # Report generator
+├── tests/                 # System integration tests
+├── benchmark_results/     # Performance analysis reports
+└── TESTING.md            # Complete testing guide
 ```
 
 ### Running Tests
 ```bash
-# Run all tests
-cargo test
+# Run all tests from root
+./scripts/run_tests.sh
 
 # Run specific service tests
-cd ingestion-service && cargo test
-cd indexing-service && cargo test
-cd search-service && cargo test
+cd services/ingestion-service && cargo test
+cd services/indexing-service && cargo test
+cd services/search-service && cargo test
 ```
 
 ### Running Benchmarks
 ```bash
-# Run benchmarks for each service
-cd ingestion-service && cargo bench
-cd indexing-service && cargo bench
-cd search-service && cargo bench
+# Run all benchmarks with beautiful HTML reports
+./scripts/run_benchmarks.sh
+
+# Run benchmarks for each service individually
+cd services/ingestion-service && cargo bench
+cd services/indexing-service && cargo bench
+cd services/search-service && cargo bench
 ```
 
 Benchmark results are saved to `target/criterion/` with HTML reports.

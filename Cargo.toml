@@ -5,10 +5,10 @@ edition = "2021"
 
 [workspace]
 members = [
-    "control-module",
-    "ingestion-service",
-    "indexing-service",
-    "search-service"
+    "services/control-module",
+    "services/ingestion-service",
+    "services/indexing-service",
+    "services/search-service"
 ]
 
 [dev-dependencies]

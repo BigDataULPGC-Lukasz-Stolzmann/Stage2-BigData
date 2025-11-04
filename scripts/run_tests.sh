@@ -11,7 +11,7 @@ run_service_tests() {
     local service=$1
     echo "🔬 Testing $service..."
 
-    cd "$service"
+    cd "services/$service"
 
     # Run unit tests (skip if no lib target)
     echo "  Running unit tests..."
@@ -28,7 +28,7 @@ run_service_tests() {
     cargo test --test integration_tests > "../test_results/${service}_integration_tests.log" 2>&1
     integration_exit_code=$?
 
-    cd ..
+    cd ../..
 
     if [ $unit_exit_code -eq 0 ]; then
         if grep -q "No library targets found" "../test_results/${service}_unit_tests.log"; then

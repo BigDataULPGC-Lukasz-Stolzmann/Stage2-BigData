@@ -6,29 +6,35 @@ This document describes the comprehensive testing and benchmarking setup for the
 
 ```
 BigDataProject/
+├── services/                        # All microservices (production code)
+│   ├── ingestion-service/
+│   │   ├── src/                     # Production code
+│   │   ├── tests/                   # Service integration tests
+│   │   │   └── integration_tests.rs
+│   │   └── benches/                 # Service benchmarks
+│   │       └── ingestion_benchmark.rs
+│   ├── indexing-service/
+│   │   ├── src/                     # Production code
+│   │   ├── tests/                   # Service integration tests
+│   │   │   └── integration_tests.rs
+│   │   └── benches/                 # Service benchmarks
+│   │       └── indexing_benchmark.rs
+│   ├── search-service/
+│   │   ├── src/                     # Production code
+│   │   ├── tests/                   # Service integration tests
+│   │   │   └── integration_tests.rs
+│   │   └── benches/                 # Service benchmarks
+│   │       └── search_benchmark.rs
+│   ├── control-module/              # Orchestration service
+│   └── docker-compose.yml           # Service configuration
 ├── tests/                           # System-wide integration tests
 │   └── system_integration_tests.rs
 ├── scripts/                         # Test and benchmark runners
 │   ├── run_tests.sh
-│   └── run_benchmarks.sh
-├── ingestion-service/
-│   ├── src/                         # Production code
-│   ├── tests/                       # Service integration tests
-│   │   └── integration_tests.rs
-│   └── benches/                     # Service benchmarks
-│       └── ingestion_benchmark.rs
-├── indexing-service/
-│   ├── src/                         # Production code
-│   ├── tests/                       # Service integration tests
-│   │   └── integration_tests.rs
-│   └── benches/                     # Service benchmarks
-│       └── indexing_benchmark.rs
-└── search-service/
-    ├── src/                         # Production code
-    ├── tests/                       # Service integration tests
-    │   └── integration_tests.rs
-    └── benches/                     # Service benchmarks
-        └── search_benchmark.rs
+│   ├── run_benchmarks.sh
+│   └── generate_html_reports.sh
+└── benchmark_results/               # Performance analysis reports
+    └── html_reports/
 ```
 
 ## 🧪 Testing Levels
@@ -126,6 +132,7 @@ Criterion generates professional HTML reports with:
 ### Prerequisites
 ```bash
 # Start all services
+cd services
 docker-compose up --build
 
 # Verify services are running
@@ -137,15 +144,15 @@ curl http://0.0.0.0:7003/status  # Search
 ### Individual Service Tests
 ```bash
 # Test ingestion service
-cd ingestion-service
+cd services/ingestion-service
 cargo test --test integration_tests
 
 # Test indexing service
-cd indexing-service
+cd services/indexing-service
 cargo test --test integration_tests
 
 # Test search service
-cd search-service
+cd services/search-service
 cargo test --test integration_tests
 ```
 

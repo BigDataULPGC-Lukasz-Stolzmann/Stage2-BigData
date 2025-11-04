@@ -13,7 +13,7 @@ run_service_benchmarks() {
     local benchmark_name=$2
 
     echo "📊 Running $service benchmarks..."
-    cd "$service"
+    cd "services/$service"
 
     # Run benchmark
     cargo bench --bench "$benchmark_name"
@@ -21,23 +21,23 @@ run_service_benchmarks() {
     # Copy HTML reports to central location
     if [ -d "target/criterion" ]; then
         echo "📁 Copying HTML reports for $service..."
-        cp -r target/criterion "../benchmark_results/html_reports/${service}_criterion_reports"
+        cp -r target/criterion "../../benchmark_results/html_reports/${service}_criterion_reports"
 
         # Create an index file for easy navigation
-        echo "<h2>$service Benchmark Results</h2>" > "../benchmark_results/html_reports/${service}_index.html"
-        echo "<ul>" >> "../benchmark_results/html_reports/${service}_index.html"
+        echo "<h2>$service Benchmark Results</h2>" > "../../benchmark_results/html_reports/${service}_index.html"
+        echo "<ul>" >> "../../benchmark_results/html_reports/${service}_index.html"
 
         for dir in target/criterion/*/; do
             if [ -d "$dir" ]; then
                 benchmark=$(basename "$dir")
-                echo "<li><a href='${service}_criterion_reports/$benchmark/report/index.html'>$benchmark</a></li>" >> "../benchmark_results/html_reports/${service}_index.html"
+                echo "<li><a href='${service}_criterion_reports/$benchmark/report/index.html'>$benchmark</a></li>" >> "../../benchmark_results/html_reports/${service}_index.html"
             fi
         done
 
-        echo "</ul>" >> "../benchmark_results/html_reports/${service}_index.html"
+        echo "</ul>" >> "../../benchmark_results/html_reports/${service}_index.html"
     fi
 
-    cd ..
+    cd ../..
 }
 
 # Function to run container performance tests
