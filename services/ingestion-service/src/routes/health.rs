@@ -1,3 +1,11 @@
+//! Health Check Endpoint
+//!
+//! Provides a simple endpoint to verify that the **Ingestion Service** is
+//! operational.
+//!
+//! **GET /status**
+//! → Returns `{"service": "ingestion-service", "status": "running"}`
+
 use crate::models::responses::HealthResponse;
 use axum::response::Json;
 

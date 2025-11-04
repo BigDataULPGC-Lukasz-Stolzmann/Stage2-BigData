@@ -1,6 +1,14 @@
 #!/bin/bash
+# ============================================================
+#  Runs unit, integration, and system tests across all services,
+#  then generates an HTML test summary report.
+#  Outputs:
+#    - Per-service test logs
+#    - System integration results
+#    - Combined HTML test report
+# ==========================================================
 
-echo "🧪 Starting comprehensive test suite"
+echo "Starting comprehensive test suite"
 echo "===================================="
 
 # Create test results directory
@@ -9,7 +17,7 @@ mkdir -p test_results
 # Function to run service tests
 run_service_tests() {
     local service=$1
-    echo "🔬 Testing $service..."
+    echo "Testing $service..."
 
     cd "services/$service"
 
@@ -51,7 +59,7 @@ run_service_tests() {
 
 # Function to check if services are running for integration tests
 check_services() {
-    echo "🔍 Checking if services are running..."
+    echo "Checking if services are running..."
 
     services=(
         "http://0.0.0.0:7001/status ingestion"
@@ -90,7 +98,7 @@ check_services() {
 
 # Function to run system integration tests
 run_system_tests() {
-    echo "🌐 Running system integration tests..."
+    echo "Running system integration tests..."
 
     cargo test --test system_integration_tests > "test_results/system_integration_tests.log" 2>&1
     exit_code=$?
@@ -107,7 +115,7 @@ run_system_tests() {
 
 # Function to generate test report
 generate_test_report() {
-    echo "📋 Generating test report..."
+    echo "Generating test report..."
 
     cat > "test_results/test_report.html" << 'EOF'
 <!DOCTYPE html>
@@ -125,12 +133,12 @@ generate_test_report() {
     </style>
 </head>
 <body>
-    <h1>🧪 Test Results - Big Data Search Engine</h1>
+    <h1>Test Results - Big Data Search Engine</h1>
     <p>Generated on: <strong>$(date)</strong></p>
 EOF
 
     # Add individual service test results
-    echo "<div class='test-section'><h2>📦 Individual Service Tests</h2>" >> "test_results/test_report.html"
+    echo "<div class='test-section'><h2>Individual Service Tests</h2>" >> "test_results/test_report.html"
 
     for service in "ingestion-service" "indexing-service" "search-service"; do
         echo "<h3>$service</h3>" >> "test_results/test_report.html"
@@ -157,7 +165,7 @@ EOF
     echo "</div>" >> "test_results/test_report.html"
 
     # Add system test results
-    echo "<div class='test-section'><h2>🌐 System Integration Tests</h2>" >> "test_results/test_report.html"
+    echo "<div class='test-section'><h2>System Integration Tests</h2>" >> "test_results/test_report.html"
 
     if [ -f "test_results/system_integration_tests.log" ]; then
         if grep -q "test result: ok" "test_results/system_integration_tests.log"; then
@@ -172,7 +180,7 @@ EOF
 
     # Add instructions
     echo "<div class='test-section'>" >> "test_results/test_report.html"
-    echo "<h2>📖 Instructions</h2>" >> "test_results/test_report.html"
+    echo "<h2>Instructions</h2>" >> "test_results/test_report.html"
     echo "<ul>" >> "test_results/test_report.html"
     echo "<li><strong>Unit Tests:</strong> Test individual functions and modules in isolation</li>" >> "test_results/test_report.html"
     echo "<li><strong>Integration Tests:</strong> Test API endpoints and service interactions</li>" >> "test_results/test_report.html"
@@ -209,7 +217,7 @@ if check_services; then
     run_system_tests
     total_failures=$((total_failures + $?))
 else
-    echo "⏭️  Skipping system integration tests (services not running)"
+    echo "Skipping system integration tests (services not running)"
     echo ""
 fi
 
@@ -217,7 +225,7 @@ fi
 generate_test_report
 
 echo ""
-echo "📋 Test Summary:"
+echo "Test Summary:"
 if [ $total_failures -eq 0 ]; then
     echo "✅ All tests passed!"
 else
@@ -225,7 +233,7 @@ else
 fi
 
 echo ""
-echo "📁 Results saved in test_results/ directory"
-echo "🌐 Open test_results/test_report.html for detailed results"
+echo "Results saved in test_results/ directory"
+echo "Open test_results/test_report.html for detailed results"
 
 exit $total_failures

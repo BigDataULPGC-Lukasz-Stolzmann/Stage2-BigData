@@ -1,4 +1,19 @@
-use async_trait::async_trait;
+//! # Storage Backends for the Indexing Service
+//!
+//! This defines the storage layer used by the **Indexing Service**.
+//! It provides both **Redis** and **PostgreSQL** backends that implement the
+//! [`StorageBackend`] trait.
+//!
+//! ## Responsibilities
+//! - Persisting `BookMetadata` and word-to-book mappings.
+//! - Supporting search queries via Redis sets or SQL tables.
+//! - Providing statistics on indexed books and words.
+//! - Handling connection testing and automatic schema initialization.
+//!
+//! ## Implementations
+//! - [`RedisBackend`] — lightweight in-memory storage for fast prototyping.
+//! - [`PostgresBackend`] — durable relational storage with SQLx and indexing.use async_trait::async_trait;
+
 use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, Row};
@@ -29,6 +44,7 @@ pub struct BookMetadata {
     pub unique_words: usize,
 }
 
+/// Trait defining a unified interface for all storage backends.
 #[async_trait]
 pub trait StorageBackend {
     async fn store_book_metadata(&self, metadata: &BookMetadata) -> Result<(), StorageError>;
@@ -41,6 +57,7 @@ pub trait StorageBackend {
     async fn test_connection(&self) -> Result<(), StorageError>;
 }
 
+/// Redis-based implementation of the [`StorageBackend`] trait.
 pub struct RedisBackend {
     client: redis::Client,
 }
@@ -150,6 +167,7 @@ impl StorageBackend for RedisBackend {
     }
 }
 
+/// PostgreSQL-based implementation of the [`StorageBackend`] trait.
 pub struct PostgresBackend {
     pool: PgPool,
 }

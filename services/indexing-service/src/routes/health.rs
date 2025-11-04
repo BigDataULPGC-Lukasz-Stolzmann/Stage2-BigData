@@ -1,3 +1,10 @@
+//! Health Check Endpoint
+//!
+//! Provides a simple endpoint to verify that the **Indexing Service** is
+//! operational.
+//!
+//! **GET /status**
+//! → Returns `{"service": "indexing-service", "status": "running"}`
 use crate::models::responses::HealthResponse;
 use axum::response::Json;
 

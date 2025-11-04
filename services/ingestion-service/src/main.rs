@@ -1,3 +1,23 @@
+//! Ingestion Service - Main Entry Point
+//!
+//! This service is responsible for downloading, storing, and managing
+//! Project Gutenberg eBooks in a structured datalake format.
+//!
+//! ## Responsibilities
+//! - Download eBooks via the Project Gutenberg public API
+//! - Split and store book content (header/body) in `/app/datalake`
+//! - Provide REST endpoints for ingestion, status checking, and listing
+//! - Include health checks for operational monitoring
+//!
+//! ## Endpoints
+//! - `GET /status` → Service health check  
+//! - `POST /ingest/:book_id` → Trigger book ingestion  
+//! - `GET /ingest/status/:book_id` → Check availability of a book  
+//! - `GET /ingest/list` → List all downloaded books
+//!
+//! The service uses `Axum` for HTTP routing, `Tokio` for async runtime,
+//! and `Tower` middlewares for tracing and CORS support.
+
 use axum::{
     routing::{get, post},
     Router,

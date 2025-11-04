@@ -1,3 +1,20 @@
+//! Storage Backend Abstraction Layer
+//!
+//! Provides a unified interface for storing and retrieving indexed book data.
+//! Supports multiple storage backends (Redis, PostgreSQL) through a trait-based design.
+//!
+//! # Architecture
+//! The storage layer sits between the Indexing Service and datamarts.
+//! It handles:
+//! - Book metadata storage (title, author, language, year, word counts)
+//! - Inverted index management (word -> book_id mappings)
+//! - Query operations for the Search Service
+//!
+//! # Storage Backends
+//! - Redis: In-memory storage for fast lookups, ideal for development and small datasets
+//! - PostgreSQL: Persistent relational storage with indexing for production use
+
+
 use async_trait::async_trait;
 use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
@@ -6,6 +23,7 @@ use std::collections::HashSet;
 use thiserror::Error;
 use tracing::error;
 
+/// Errors that can occur during storage operations.
 #[derive(Error, Debug)]
 pub enum StorageError {
     #[error("Redis error: {0}")]
@@ -18,6 +36,9 @@ pub enum StorageError {
     Connection(String),
 }
 
+/// Metadata for an indexed book.
+///
+/// This structure is stored in the datamart and returned by search queries.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BookMetadata {
     pub book_id: u32,
@@ -29,6 +50,10 @@ pub struct BookMetadata {
     pub unique_words: usize,
 }
 
+/// Trait defining the storage backend interface.
+///
+/// All storage implementations (Redis, PostgreSQL) must implement this trait
+/// to ensure consistent behavior across different backends.
 #[async_trait]
 pub trait StorageBackend {
     async fn store_book_metadata(&self, metadata: &BookMetadata) -> Result<(), StorageError>;
@@ -41,6 +66,13 @@ pub trait StorageBackend {
     async fn test_connection(&self) -> Result<(), StorageError>;
 }
 
+/// Redis-based storage implementation.
+///
+/// Uses Redis data structures for fast in-memory operations:
+/// - `book:{id}:metadata` - JSON-serialized book metadata
+/// - `word:{word}` - Set of book IDs containing the word (inverted index)
+/// - `stats:total_books` - Counter for total indexed books
+/// - `stats:all_words` - Set of all indexed words
 pub struct RedisBackend {
     client: redis::Client,
 }
@@ -150,6 +182,13 @@ impl StorageBackend for RedisBackend {
     }
 }
 
+
+/// PostgreSQL-based storage implementation.
+///
+/// Uses relational tables with proper indexing:
+/// - `books` table - Book metadata with primary key on book_id
+/// - `word_index` table - Inverted index with composite primary key (word, book_id)
+/// - Index on `word_index.word` for fast word lookups
 pub struct PostgresBackend {
     pool: PgPool,
 }
@@ -176,6 +215,7 @@ impl PostgresBackend {
         .execute(&pool)
         .await?;
 
+        // Create inverted index table
         sqlx::query(
             r#"
             CREATE TABLE IF NOT EXISTS word_index (
@@ -188,6 +228,7 @@ impl PostgresBackend {
         .execute(&pool)
         .await?;
 
+        // Add index on word column for fast lookups
         sqlx::query(
             r#"
             CREATE INDEX IF NOT EXISTS idx_word_index_word ON word_index(word)
