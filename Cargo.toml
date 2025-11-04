@@ -1,0 +1,22 @@
+[package]
+name = "big-data-search-engine"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = [
+    "control-module",
+    "ingestion-service",
+    "indexing-service",
+    "search-service"
+]
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.11", features = ["json"] }
+serde_json = "1.0"
+tokio-test = "0.4"
+
+[[test]]
+name = "system_integration_tests"
+path = "tests/system_integration_tests.rs"

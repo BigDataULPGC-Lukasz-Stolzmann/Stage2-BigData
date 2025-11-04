@@ -8,7 +8,7 @@ fn header_body_split(text: &str) -> (String, String) {
         let header = text[..start_pos].to_string();
 
         if let Some(end_pos) = text.find(end_marker) {
-            let body_start = text.find('\n', start_pos).unwrap_or(start_pos) + 1;
+            let body_start = text[start_pos..].find('\n').map(|pos| start_pos + pos + 1).unwrap_or(start_pos);
             let body = text[body_start..end_pos].to_string();
             return (header, body);
         }

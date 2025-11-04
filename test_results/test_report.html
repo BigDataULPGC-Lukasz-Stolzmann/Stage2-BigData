@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Results - Big Data Search Engine</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .pass { color: #4CAF50; font-weight: bold; }
+        .fail { color: #f44336; font-weight: bold; }
+        .log-link { display: inline-block; margin: 5px; padding: 5px 10px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 3px; font-size: 12px; }
+        pre { background-color: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Results - Big Data Search Engine</h1>
+    <p>Generated on: <strong>$(date)</strong></p>
+<div class='test-section'><h2>📦 Individual Service Tests</h2>
+<h3>ingestion-service</h3>
+<p class='fail'>❌ Unit Tests: FAILED</p>
+<a href='ingestion-service_unit_tests.log' class='log-link'>Unit Test Log</a>
+<p class='pass'>✅ Integration Tests: PASSED</p>
+<a href='ingestion-service_integration_tests.log' class='log-link'>Integration Test Log</a>
+<h3>indexing-service</h3>
+<p class='fail'>❌ Unit Tests: FAILED</p>
+<a href='indexing-service_unit_tests.log' class='log-link'>Unit Test Log</a>
+<p class='fail'>❌ Integration Tests: FAILED</p>
+<a href='indexing-service_integration_tests.log' class='log-link'>Integration Test Log</a>
+<h3>search-service</h3>
+<p class='fail'>❌ Unit Tests: FAILED</p>
+<a href='search-service_unit_tests.log' class='log-link'>Unit Test Log</a>
+<p class='fail'>❌ Integration Tests: FAILED</p>
+<a href='search-service_integration_tests.log' class='log-link'>Integration Test Log</a>
+</div>
+<div class='test-section'><h2>🌐 System Integration Tests</h2>
+<p class='fail'>❌ System Integration Tests: FAILED</p>
+<a href='system_integration_tests.log' class='log-link'>System Test Log</a>
+</div>
+<div class='test-section'>
+<h2>📖 Instructions</h2>
+<ul>
+<li><strong>Unit Tests:</strong> Test individual functions and modules in isolation</li>
+<li><strong>Integration Tests:</strong> Test API endpoints and service interactions</li>
+<li><strong>System Tests:</strong> Test complete end-to-end workflows</li>
+</ul>
+<p>To run tests manually:</p>
+<pre>./scripts/run_tests.sh</pre>
+</div>
+</body></html>

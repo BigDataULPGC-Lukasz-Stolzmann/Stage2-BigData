@@ -1,4 +1,4 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
 use regex::Regex;
 use std::collections::HashSet;
 
@@ -78,11 +78,15 @@ Language: English
     });
 }
 
-criterion_group!(
-    benches,
-    benchmark_tokenize_text,
-    benchmark_tokenize_text_large,
-    benchmark_extract_metadata,
-    benchmark_full_processing
-);
+fn custom_criterion() -> Criterion {
+    Criterion::default()
+        .sample_size(100)
+        .measurement_time(std::time::Duration::from_secs(10))
+}
+
+criterion_group! {
+    name = benches;
+    config = custom_criterion();
+    targets = benchmark_tokenize_text, benchmark_tokenize_text_large, benchmark_extract_metadata, benchmark_full_processing
+}
 criterion_main!(benches);
