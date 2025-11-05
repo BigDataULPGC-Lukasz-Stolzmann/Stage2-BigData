@@ -9,7 +9,7 @@ pub async fn download_book(
         "https://www.gutenberg.org/cache/epub/{}/pg{}.txt",
         book_id, book_id
     );
-    let datalake_path = create_datalake_path(book_id);
+    let datalake_path = create_datalake_path();
 
     fs::create_dir_all(&datalake_path)?;
 
