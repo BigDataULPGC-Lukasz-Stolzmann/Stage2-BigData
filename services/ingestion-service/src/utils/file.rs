@@ -1,3 +1,11 @@
+//! File Utilities
+//!
+//! Provides helper functions for file management and preprocessing.
+//!
+//! ## Responsibilities
+//! - Create structured datalake paths based on date and book ID  
+//! - Split raw Project Gutenberg text files into header and body section
+
 use chrono::Utc;
 
 pub const DATALAKE_PATH: &str = "/app/datalake";

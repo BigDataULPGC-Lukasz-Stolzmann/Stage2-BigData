@@ -1,3 +1,21 @@
+//! Indexing Service
+//!
+//! Handles **indexing and search preparation** for eBooks stored in the datalake.
+//! The service reads preprocessed text files, extracts metadata and tokens,
+//! and builds a searchable index using either **Redis** or **PostgreSQL** backends.
+//!
+//! ## Responsibilities
+//! - Index new books on demand  
+//! - Rebuild the entire index from the datalake  
+//! - Provide index statistics and health status  
+//! - Support multiple storage backends (Redis or PostgreSQL)
+//!
+//! ## Environment Variables
+//! - `BACKEND_TYPE`: Selects the storage backend (`redis` or `postgres`)  
+//! - `REDIS_URL`: Redis connection URL (default: `redis://redis:6379`)  
+//! - `DATABASE_URL`: PostgreSQL connection string  
+//! - `PORT`: Service port (default: `7002`)
+
 use axum::{
     routing::{get, post},
     Router,

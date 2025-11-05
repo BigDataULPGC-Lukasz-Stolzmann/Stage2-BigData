@@ -1,4 +1,13 @@
 #!/bin/bash
+# ============================================================
+#  generate_html_reports.sh
+#  Creates styled HTML benchmark reports for all services.
+#  Outputs:
+#    - Main dashboard (index.html)
+#    - Container performance reports
+#    - System workflow report
+# ============================================================
+
 
 # Generate properly formatted HTML reports with UTF-8 encoding
 
@@ -207,65 +216,65 @@ create_main_index() {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Big Data Search Engine</h1>
+            <h1>Big Data Search Engine</h1>
             <div class="subtitle">Comprehensive Performance Analysis Dashboard</div>
-            <div class="timestamp">📅 Generated on: $CURRENT_DATE</div>
+            <div class="timestamp">Generated on: $CURRENT_DATE</div>
         </div>
 
         <div class="section">
-            <h2>📊 Individual Service Benchmarks</h2>
+            <h2>Individual Service Benchmarks</h2>
             <p>Detailed micro-benchmarks with statistical analysis using Criterion framework. These reports include interactive charts, performance trends, and statistical insights.</p>
             <div class="button-grid">
                 <a href="ingestion-service_criterion_reports/report/index.html" class="btn criterion-btn">
-                    📥 Ingestion Service<br>
+                    Ingestion Service<br>
                     <small>Text processing & file handling</small>
                 </a>
                 <a href="indexing-service_criterion_reports/report/index.html" class="btn criterion-btn">
-                    🔍 Indexing Service<br>
+                    Indexing Service<br>
                     <small>Search index building</small>
                 </a>
                 <a href="search-service_criterion_reports/report/index.html" class="btn criterion-btn">
-                    🔎 Search Service<br>
+                    Search Service<br>
                     <small>Query processing & results</small>
                 </a>
             </div>
         </div>
 
         <div class="section">
-            <h2>🐳 Container Performance Tests</h2>
+            <h2>Container Performance Tests</h2>
             <p>Real-world API endpoint response times under load testing. These tests measure actual service performance in containerized environments.</p>
             <div class="button-grid">
                 <a href="ingestion-service_container_performance.html" class="btn container-btn">
-                    📥 Ingestion Container<br>
+                    Ingestion Container<br>
                     <small>API response times</small>
                 </a>
                 <a href="indexing-service_container_performance.html" class="btn container-btn">
-                    🔍 Indexing Container<br>
+                    Indexing Container<br>
                     <small>Processing performance</small>
                 </a>
                 <a href="search-service_container_performance.html" class="btn container-btn">
-                    🔎 Search Container<br>
+                    Search Container<br>
                     <small>Query responsiveness</small>
                 </a>
             </div>
         </div>
 
         <div class="section">
-            <h2>🌐 System-wide Analysis</h2>
+            <h2>System-wide Analysis</h2>
             <p>End-to-end performance measuring complete book processing pipeline from ingestion through search.</p>
             <div class="button-grid">
                 <a href="system_workflow_performance.html" class="btn system-btn">
-                    🔄 End-to-End Workflow<br>
+                    End-to-End Workflow<br>
                     <small>Complete pipeline analysis</small>
                 </a>
             </div>
         </div>
 
         <div class="section">
-            <h2>📈 Report Information</h2>
+            <h2>Report Information</h2>
             <div class="info-grid">
                 <div class="info-card">
-                    <h3>🎯 Criterion Reports</h3>
+                    <h3>Criterion Reports</h3>
                     <p>Statistical micro-benchmarks with confidence intervals, regression detection, and performance trend analysis. Includes violin plots and detailed timing distributions.</p>
                 </div>
                 <div class="info-card">
@@ -273,7 +282,7 @@ create_main_index() {
                     <p>Live API performance measurements under realistic load conditions. Tests actual HTTP endpoints with response time analysis and success rate metrics.</p>
                 </div>
                 <div class="info-card">
-                    <h3>🔄 System Workflow</h3>
+                    <h3>System Workflow</h3>
                     <p>Complete pipeline performance from book ingestion through indexing to search. Measures real-world end-to-end processing times.</p>
                 </div>
             </div>
@@ -458,7 +467,7 @@ create_container_report() {
             <tbody id="results-body">
                 <tr>
                     <td colspan="4" style="text-align: center; padding: 40px;">
-                        🔄 Loading performance data...
+                        Loading performance data...
                     </td>
                 </tr>
             </tbody>
@@ -479,19 +488,19 @@ create_container_report() {
                     <td>/status</td>
                     <td>45</td>
                     <td>100</td>
-                    <td class="status-good">✅ Excellent</td>
+                    <td class="status-good">Excellent</td>
                 </tr>
                 <tr>
                     <td>/health</td>
                     <td>52</td>
                     <td>100</td>
-                    <td class="status-good">✅ Excellent</td>
+                    <td class="status-good">Excellent</td>
                 </tr>
                 <tr>
                     <td>API Endpoints</td>
                     <td>78</td>
                     <td>98</td>
-                    <td class="status-good">✅ Good</td>
+                    <td class="status-good">Good</td>
                 </tr>
             \`;
         }, 1000);
@@ -668,7 +677,7 @@ create_system_workflow_report() {
         <a href="index.html" class="back-link">← Back to Dashboard</a>
 
         <div class="header">
-            <h1>🌐 System Workflow Performance</h1>
+            <h1>System Workflow Performance</h1>
             <p>End-to-end book processing pipeline analysis</p>
             <p><small>Generated on: $CURRENT_DATE</small></p>
         </div>
@@ -730,7 +739,7 @@ create_system_workflow_report() {
                     <td>2,100</td>
                     <td>5,800</td>
                     <td>550</td>
-                    <td>✅ Success</td>
+                    <td>Success</td>
                 </tr>
                 <tr>
                     <td><strong>11</strong> (Alice in Wonderland)</td>
@@ -738,7 +747,7 @@ create_system_workflow_report() {
                     <td>1,800</td>
                     <td>3,900</td>
                     <td>500</td>
-                    <td>✅ Success</td>
+                    <td>Success</td>
                 </tr>
                 <tr>
                     <td><strong>1342</strong> (Pride and Prejudice)</td>
@@ -746,13 +755,13 @@ create_system_workflow_report() {
                     <td>2,400</td>
                     <td>6,200</td>
                     <td>500</td>
-                    <td>✅ Success</td>
+                    <td>Success</td>
                 </tr>
             </tbody>
         </table>
 
         <div style="margin-top: 40px; padding: 20px; background: #e8f5e8; border-radius: 10px; border-left: 5px solid #27ae60;">
-            <h3>📊 Performance Analysis</h3>
+            <h3>Performance Analysis</h3>
             <ul style="margin-top: 15px; line-height: 2;">
                 <li>All workflow tests completed successfully</li>
                 <li>Average processing time under 8 seconds per book</li>
@@ -766,7 +775,7 @@ create_system_workflow_report() {
 EOF
 }
 
-echo "🎨 Generating beautiful HTML reports with proper encoding..."
+echo "🎨 Generating HTML reports with proper encoding..."
 
 # Create the main reports
 create_main_index
@@ -775,5 +784,5 @@ create_container_report "indexing-service" "7002"
 create_container_report "search-service" "7003"
 create_system_workflow_report
 
-echo "✅ Beautiful HTML reports generated!"
-echo "📁 Open benchmark_results/html_reports/index.html to view"
+echo "HTML reports generated!"
+echo "Open benchmark_results/html_reports/index.html to view"

@@ -1,3 +1,14 @@
+//! Integration Tests for Ingestion Service
+//!
+//! These tests verify that the ingestion service endpoints behave correctly
+//! when interacting with live HTTP routes.
+//!
+//! ## Tested Endpoints
+//! - `GET /status` → Health check
+//! - `POST /ingest/:book_id` → Book ingestion workflow
+//! - `GET /ingest/status/:book_id` → Book status lookup
+//! - `GET /ingest/list` → Listing of downloaded books
+
 use serde_json::Value;
 use tokio::time::{sleep, Duration};
 

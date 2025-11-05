@@ -1,3 +1,19 @@
+//! Search Service Entry Point
+//!
+//! Initializes the **Search Service** — responsible for handling user queries,
+//! retrieving indexed book data, and returning search results.
+//!
+//! ## Responsibilities
+//! - Bootstraps the Axum web server
+//! - Connects to the configured storage backend (Redis or PostgreSQL)
+//! - Registers core routes: `/status` and `/search`
+//!
+//! ## Environment Variables
+//! - `BACKEND_TYPE` → `"redis"` (default) or `"postgres"`
+//! - `REDIS_URL` → Redis connection string
+//! - `DATABASE_URL` → PostgreSQL connection string
+//! - `PORT` → Service port (default: `7003`)
+
 use axum::{
     routing::get,
     Router,

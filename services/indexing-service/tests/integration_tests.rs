@@ -1,3 +1,9 @@
+//! Integration Tests for Indexing Service
+//!
+//! These async tests validate the **Indexing Service** REST API end-to-end,
+//! ensuring proper behavior of health checks, book indexing, index rebuilding,
+//! and concurrent processing.
+
 use serde_json::Value;
 use tokio::time::{sleep, Duration};
 

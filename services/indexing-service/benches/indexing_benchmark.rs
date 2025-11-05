@@ -1,3 +1,10 @@
+//! Indexing Service - Benchmarks
+//!
+//! Uses Criterion to measure performance of:
+//! - Text tokenization
+//! - Metadata extraction from book headers
+//! - Combined metadata + tokenization workflow
+
 use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
 use regex::Regex;
 use std::collections::HashSet;
