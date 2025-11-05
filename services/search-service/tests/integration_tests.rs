@@ -1,3 +1,12 @@
+//! Integration Tests for Search Service
+//!
+//! They use live HTTP requests via `reqwest` to ensure
+//! end-to-end behavior across routes, serialization, and backend integration.
+//!
+//! ## Tested Endpoints
+//! - `/status` — service health verification
+//! - `/search` — query execution with filters and pagination
+
 use serde_json::Value;
 
 #[tokio::test]

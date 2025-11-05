@@ -1,9 +1,25 @@
+//! Control Module
+//!
+//! Coordinates the ingestion, indexing, and verification workflows across
+//! the microservices pipeline:
+//!
+//! - **Ingestion Service (port 7001)** — downloads and stores eBooks  
+//! - **Indexing Service (port 7002)** — builds searchable word indices  
+//! - **Search Service (port 7003)** — provides full-text query capabilities
+//!
+//! ## Responsibilities
+//! - Wait for all dependent services to become available  
+//! - Trigger ingestion and indexing for given book IDs  
+//! - Verify pipeline completion with structured status checks  
+//! - Optionally run in continuous monitoring mode 
+
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use tokio::time::sleep;
 use tracing::{error, info, warn};
 
+/// Response from the ingestion service after downloading a book.
 #[derive(Debug, Serialize, Deserialize)]
 struct IngestResponse {
     book_id: u32,
@@ -11,18 +27,21 @@ struct IngestResponse {
     path: String,
 }
 
+/// Response representing ingestion or availability status.
 #[derive(Debug, Serialize, Deserialize)]
 struct StatusResponse {
     book_id: u32,
     status: String,
 }
 
+/// Response from the indexing service after updating or rebuilding an index.
 #[derive(Debug, Serialize, Deserialize)]
 struct IndexResponse {
     book_id: u32,
     status: String,
 }
 
+/// Response representing available ingested books.
 #[derive(Debug, Serialize, Deserialize)]
 struct ListResponse {
     count: usize,
@@ -33,6 +52,7 @@ const INGESTION_SERVICE_URL: &str = "http://0.0.0.0:7001";
 const INDEXING_SERVICE_URL: &str = "http://0.0.0.0:7002";
 const SEARCH_SERVICE_URL: &str = "http://0.0.0.0:7003";
 
+/// Central coordinator for managing service pipelines.
 struct ControlModule {
     client: Client,
 }
@@ -44,6 +64,7 @@ impl ControlModule {
         }
     }
 
+    /// Waits until all dependent services respond with a successful `/status`.
     async fn wait_for_services(&self) -> Result<(), Box<dyn std::error::Error>> {
         info!("Waiting for services to be ready...");
 
@@ -79,6 +100,7 @@ impl ControlModule {
         Ok(())
     }
 
+    /// Requests ingestion of a specific book by ID.
     async fn ingest_book(
         &self,
         book_id: u32,
@@ -102,6 +124,7 @@ impl ControlModule {
         }
     }
 
+    /// Checks if a previously ingested book is available for indexing.
     async fn check_ingestion_status(
         &self,
         book_id: u32,
@@ -117,6 +140,7 @@ impl ControlModule {
         }
     }
 
+    /// Requests the indexing of a specific ingested book.
     async fn index_book(&self, book_id: u32) -> Result<IndexResponse, Box<dyn std::error::Error>> {
         info!("Indexing book {}", book_id);
 
@@ -137,6 +161,7 @@ impl ControlModule {
         }
     }
 
+    /// Retrieves a list of available ingested books.
     async fn get_available_books(&self) -> Result<Vec<u32>, Box<dyn std::error::Error>> {
         let url = format!("{}/ingest/list", INGESTION_SERVICE_URL);
         let response = self.client.get(&url).send().await?;
@@ -149,16 +174,17 @@ impl ControlModule {
         }
     }
 
+    /// Executes the full ingestion + indexing pipeline for a single book.
     async fn process_book(&self, book_id: u32) -> Result<(), Box<dyn std::error::Error>> {
-        info!("🚀 Starting processing pipeline for book {}", book_id);
+        info!("Starting processing pipeline for book {}", book_id);
 
-        info!("📥 Step 1: Ingesting book {}", book_id);
+        info!("Step 1: Ingesting book {}", book_id);
         let ingest_response = self.ingest_book(book_id).await?;
 
-        info!("⏳ Step 2: Waiting for ingestion confirmation...");
+        info!("Step 2: Waiting for ingestion confirmation...");
         sleep(Duration::from_millis(500)).await;
 
-        info!("✅ Step 3: Verifying ingestion status...");
+        info!("Step 3: Verifying ingestion status...");
         if !self.check_ingestion_status(book_id).await? {
             return Err(format!(
                 "Book {} ingestion verification failed - status not 'available'",
@@ -171,7 +197,7 @@ impl ControlModule {
             book_id, ingest_response.path
         );
 
-        info!("📊 Step 4: Indexing book {}", book_id);
+        info!("Step 4: Indexing book {}", book_id);
         let index_response = self.index_book(book_id).await?;
 
         info!("✅ Step 5: Verifying indexing completion...");
@@ -184,12 +210,13 @@ impl ControlModule {
         }
 
         info!(
-            "🎉 Successfully completed processing pipeline for book {}",
+            "Successfully completed processing pipeline for book {}",
             book_id
         );
         Ok(())
     }
 
+    /// Runs the pipeline sequentially for a list of book IDs.
     async fn run_pipeline(&self, book_ids: Vec<u32>) -> Result<(), Box<dyn std::error::Error>> {
         info!("Starting pipeline for {} books", book_ids.len());
 
@@ -206,6 +233,7 @@ impl ControlModule {
         Ok(())
     }
 
+    /// Periodically polls available books in continuous monitoring mode.
     async fn continuous_mode(&self) -> Result<(), Box<dyn std::error::Error>> {
         info!("Starting continuous monitoring mode...");
 

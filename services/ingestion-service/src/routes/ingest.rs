@@ -1,3 +1,13 @@
+//! Ingestion Endpoints
+//!
+//! Provides REST endpoints for managing book ingestion in the **Ingestion Service**.
+//! Handles downloading, tracking, and listing ingested books stored in the datalake.
+//!
+//! ## Endpoints
+//! - **GET /ingest/:book_id** — downloads and stores a book from Project Gutenberg  
+//! - **GET /status/:book_id** — checks if a book has been successfully processed  
+//! - **GET /list** — returns all available ingested books in the datalake
+
 use crate::models::responses::{IngestResponse, ListResponse, StatusResponse};
 use crate::services::download::download_book;
 use crate::utils::file::{create_datalake_path, DATALAKE_PATH};

@@ -1,3 +1,14 @@
+//! Text Utilities
+//!
+//! Provides text-processing helpers used during indexing, primarily for
+//! tokenization of eBook contents. 
+//!
+//! ## Responsibilities
+//! - Normalize text by converting to lowercase  
+//! - Extract valid alphabetic tokens using regular expressions  
+//! - Filter out very short or irrelevant words  
+//! - Return unique tokens as a `HashSet<String>` for efficient indexing
+
 use regex::Regex;
 use std::collections::HashSet;
 

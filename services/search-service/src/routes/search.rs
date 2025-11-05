@@ -1,3 +1,11 @@
+//! Search Endpoint
+//!
+//! Handles book search queries for the **Search Service**.
+//! Performs tokenization, inverted index lookups, and metadata filtering.
+//!
+//! **GET /search?q=...&author=&language=&year=**
+//! → Returns matching books with applied filters.
+
 use crate::models::responses::{BookResult, SearchResponse};
 use crate::models::storage::{BookMetadata, StorageBackend};
 use axum::{
@@ -129,6 +137,11 @@ fn apply_filters(
         .collect()
 }
 
+
+/// Main search handler for the Search Service.
+///
+/// Tokenizes the query, retrieves matching books from the inverted index,
+/// applies filters, and returns structured search results.
 pub async fn search_books(
     Query(params): Query<SearchParams>,
     State(backend): State<Backend>,

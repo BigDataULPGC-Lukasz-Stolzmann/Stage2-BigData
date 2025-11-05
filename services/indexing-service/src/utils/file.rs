@@ -1,3 +1,13 @@
+//! File Utilities
+//!
+//! Provides helper functions for locating and managing files within the
+//! **datalake**.
+//!
+//! ## Responsibilities
+//! - Define the base datalake path used by the service  
+//! - Locate book files (`header_*.txt` and `body_*.txt`) across nested directories  
+//! - Return matching file paths for downstream indexing operations
+
 use std::fs;
 
 pub const DATALAKE_PATH: &str = "/app/datalake";

@@ -1,3 +1,13 @@
+//! Ingestion Service — Benchmarks
+//!
+//! Contains performance benchmarks for core text-processing
+//! routines used during ingestion
+
+//! ## Benchmarked Functions
+//! - `header_body_split`: header/body extraction for normal text samples
+//! - `header_body_split_large`: stress test using large content blocks
+
+
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 fn header_body_split(text: &str) -> (String, String) {

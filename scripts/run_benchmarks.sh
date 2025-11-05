@@ -1,10 +1,18 @@
 #!/bin/bash
+# ============================================================
+#  Executes Criterion micro-benchmarks and container load tests
+#  for all services, then generates HTML performance reports.
+#  Outputs:
+#    - Criterion results per service
+#    - Container performance summaries
+#    - End-to-end workflow benchmark
+# ============================================================
 
 # Create benchmark results directory
 mkdir -p benchmark_results
 mkdir -p benchmark_results/html_reports
 
-echo "🚀 Starting comprehensive benchmark suite with HTML reports"
+echo "Starting comprehensive benchmark suite with HTML reports"
 echo "================================================"
 
 # Function to run service benchmarks and copy HTML reports
@@ -12,7 +20,7 @@ run_service_benchmarks() {
     local service=$1
     local benchmark_name=$2
 
-    echo "📊 Running $service benchmarks..."
+    echo "Running $service benchmarks..."
     cd "services/$service"
 
     # Run benchmark
@@ -45,7 +53,7 @@ run_container_benchmarks() {
     local service=$1
     local port=$2
 
-    echo "🐳 Running container performance tests for $service..."
+    echo "Running container performance tests for $service..."
 
     # Check if service is running
     if ! curl -s "http://0.0.0.0:$port/status" > /dev/null; then
@@ -100,7 +108,7 @@ run_container_benchmarks() {
 
 # Function to run system-wide workflow benchmarks
 run_system_benchmarks() {
-    echo "🌐 Running system-wide workflow benchmarks..."
+    echo "Running system-wide workflow benchmarks..."
 
     echo "<h2>System-wide Workflow Performance</h2>" > "benchmark_results/html_reports/system_workflow_performance.html"
     echo "<table border='1'><tr><th>Book ID</th><th>Total Time (ms)</th><th>Ingest Time (ms)</th><th>Index Time (ms)</th><th>Search Time (ms)</th><th>Success</th></tr>" >> "benchmark_results/html_reports/system_workflow_performance.html"
@@ -108,7 +116,7 @@ run_system_benchmarks() {
     book_ids=("84" "11" "1342")
 
     for book_id in "${book_ids[@]}"; do
-        echo "🔄 Testing full workflow for book $book_id..."
+        echo "Testing full workflow for book $book_id..."
 
         start_time=$(python3 -c "import time; print(int(time.time() * 1000))")
 
@@ -155,7 +163,7 @@ run_system_benchmarks() {
 
 # Create main index page
 create_main_index() {
-    echo "📋 Creating main benchmark index..."
+    echo "Creating main benchmark index..."
 
     cat > "benchmark_results/html_reports/index.html" << 'EOF'
 <!DOCTYPE html>
@@ -172,30 +180,30 @@ create_main_index() {
     </style>
 </head>
 <body>
-    <h1>🚀 Big Data Search Engine - Benchmark Results</h1>
+    <h1>Big Data Search Engine - Benchmark Results</h1>
     <p>Generated on: <strong>$(date)</strong></p>
 
     <div class="service-section">
-        <h2>📊 Individual Service Benchmarks (Criterion Reports)</h2>
+        <h2>Individual Service Benchmarks (Criterion Reports)</h2>
         <a href="ingestion-service_index.html" class="criterion-link">Ingestion Service</a>
         <a href="indexing-service_index.html" class="criterion-link">Indexing Service</a>
         <a href="search-service_index.html" class="criterion-link">Search Service</a>
     </div>
 
     <div class="service-section">
-        <h2>🐳 Container Performance Tests</h2>
+        <h2>Container Performance Tests</h2>
         <a href="ingestion-service_container_performance.html" class="container-link">Ingestion Container</a>
         <a href="indexing-service_container_performance.html" class="container-link">Indexing Container</a>
         <a href="search-service_container_performance.html" class="container-link">Search Container</a>
     </div>
 
     <div class="service-section">
-        <h2>🌐 System-wide Workflow</h2>
+        <h2>System-wide Workflow</h2>
         <a href="system_workflow_performance.html" class="system-link">End-to-End Performance</a>
     </div>
 
     <div class="service-section">
-        <h2>📈 About These Reports</h2>
+        <h2>About These Reports</h2>
         <ul>
             <li><strong>Criterion Reports:</strong> Detailed micro-benchmarks with statistical analysis, charts, and performance trends</li>
             <li><strong>Container Performance:</strong> Real-world API endpoint response times under load</li>
@@ -227,7 +235,7 @@ run_system_benchmarks
 create_main_index
 
 echo ""
-echo "✅ Benchmark suite completed!"
-echo "📁 Results location: benchmark_results/html_reports/"
-echo "🌐 Open benchmark_results/html_reports/index.html in your browser"
-echo "📊 Criterion detailed reports are in subdirectories with interactive charts"
+echo "Benchmark suite completed!"
+echo "Results location: benchmark_results/html_reports/"
+echo "Open benchmark_results/html_reports/index.html in your browser"
+echo "Criterion detailed reports are in subdirectories with interactive charts"

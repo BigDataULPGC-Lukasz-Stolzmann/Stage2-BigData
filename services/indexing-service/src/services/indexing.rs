@@ -1,3 +1,17 @@
+//! Indexing Service
+//!
+//! Handles the extraction, tokenization, and indexing of eBook data stored in the
+//! datalake. Each book’s header and body are parsed to extract metadata and
+//! normalized word tokens, which are then written into the configured backend
+//! (Redis or PostgreSQL).
+//!
+//! ## Responsibilities
+//! - Read header and body files for each book from the datalake  
+//! - Extract metadata (title, author, language, year) from the header  
+//! - Tokenize the book’s text content and title into searchable words  
+//! - Store metadata and word-to-book relationships in the backend  
+//! - Ensure consistent indexing for rebuild and incremental ingestion
+
 use crate::models::storage::{BookMetadata, StorageBackend};
 use crate::utils::file::find_book_files;
 use crate::utils::text::tokenize_text;

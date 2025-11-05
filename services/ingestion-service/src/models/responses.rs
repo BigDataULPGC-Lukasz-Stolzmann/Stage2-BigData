@@ -1,3 +1,13 @@
+//! Ingestion Service — Response Models
+//!
+//! Defines the **API response structures** used by the Ingestion Service.
+//!
+//! ## Structures
+//! - `HealthResponse` — used by `/status` for service health reporting  
+//! - `IngestResponse` — returned after successful ingestion of a book  
+//! - `StatusResponse` — reports processing status for a specific book  
+//! - `ListResponse` — lists all available ingested book IDs
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug)]

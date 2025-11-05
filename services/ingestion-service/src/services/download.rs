@@ -1,3 +1,14 @@
+//! Download Service
+//!
+//! Handles downloading and preprocessing of eBooks from **Project Gutenberg**.
+//! Each downloaded book is split into a header and body, then stored in the
+//! datalake for further processing by downstream services.
+//!
+//! ## Responsibilities
+//! - Fetch book text files from Project Gutenberg by book ID  
+//! - Split content into header/body using `header_body_split`  
+//! - Persist results into the structured datalake directory
+
 use crate::utils::file::{create_datalake_path, header_body_split};
 use std::fs;
 use tracing::info;

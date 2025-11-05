@@ -1,3 +1,13 @@
+//! Indexing Endpoints
+//!
+//! This module defines HTTP routes for book indexing operations, including:
+//! - Indexing a single book by ID
+//! - Rebuilding the entire index from the datalake
+//! - Retrieving current index statistics
+//!
+//! It interacts with a pluggable [`StorageBackend`] (e.g., Redis or Postgres)
+//! and uses the [`process_book`] function from the indexing service for core logic.
+
 use crate::models::responses::{IndexResponse, IndexStatusResponse, RebuildResponse};
 use crate::models::storage::StorageBackend;
 use crate::services::indexing::process_book;

@@ -1,6 +1,16 @@
+//! Search Service Benchmarks
+//!
+//! Measures the performance of core search operations: query tokenization,
+//! book matching, and filtered search across the dataset.
+//!
+//! These benchmarks help identify performance bottlenecks in the search algorithm
+//! and provide data for the Stage 2 performance analysis report.
+
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use std::collections::HashMap;
 
+
+/// Represents a book in the search results.
 #[derive(Debug, Clone)]
 struct BookResult {
     book_id: u32,
@@ -10,6 +20,7 @@ struct BookResult {
     year: Option<u32>,
 }
 
+/// Tokenizes a search query into individual words for matching.
 fn tokenize_query(query: &str) -> Vec<String> {
     query.to_lowercase()
          .split_whitespace()
@@ -18,6 +29,7 @@ fn tokenize_query(query: &str) -> Vec<String> {
          .collect()
 }
 
+/// Checks if a book matches any of the query terms.
 fn matches_query(book: &BookResult, query_words: &[String]) -> bool {
     let book_text = format!("{} {}", book.title.to_lowercase(), book.author.to_lowercase());
 
@@ -26,9 +38,11 @@ fn matches_query(book: &BookResult, query_words: &[String]) -> bool {
     })
 }
 
+/// Creates a sample dataset for benchmarking.
 fn create_sample_books() -> HashMap<u32, BookResult> {
     let mut books = HashMap::new();
 
+    // Books for validation
     books.insert(1342, BookResult {
         book_id: 1342,
         title: "Pride and Prejudice".to_string(),
@@ -59,6 +73,7 @@ fn create_sample_books() -> HashMap<u32, BookResult> {
     books
 }
 
+/// Benchmarks query tokenization performance.
 fn benchmark_tokenize_query(c: &mut Criterion) {
     let query = "pride prejudice jane austen";
 
@@ -67,6 +82,7 @@ fn benchmark_tokenize_query(c: &mut Criterion) {
     });
 }
 
+/// Benchmarks single book matching against query terms.
 fn benchmark_matches_query(c: &mut Criterion) {
     let book = BookResult {
         book_id: 1342,
@@ -82,6 +98,9 @@ fn benchmark_matches_query(c: &mut Criterion) {
     });
 }
 
+/// Benchmarks full search across 1000+ books without filters.
+///
+/// Performance determines maximum throughput for unfiltered queries.
 fn benchmark_search_small_dataset(c: &mut Criterion) {
     let books = create_sample_books();
     let query_words = vec!["test".to_string(), "book".to_string()];
@@ -99,6 +118,9 @@ fn benchmark_search_small_dataset(c: &mut Criterion) {
     });
 }
 
+/// Benchmarks search with metadata filtering (by author).
+///
+/// Measures the additional cost of applying filters after matching,
 fn benchmark_search_with_filters(c: &mut Criterion) {
     let books = create_sample_books();
     let query_words = vec!["test".to_string()];

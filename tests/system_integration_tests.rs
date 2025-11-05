@@ -1,3 +1,18 @@
+// ============================================================
+//  End-to-end tests for the Big Data Search Engine system.
+//
+//  Covers:
+//    - Full book ingestion → indexing → search workflow
+//    - Multi-book and concurrent operations
+//    - Service resilience and error handling
+//    - End-to-end performance metrics
+//
+//  Requires all services running locally or via Docker:
+//    ingestion-service (port 7001)
+//    indexing-service  (port 7002)
+//    search-service    (port 7003)
+// ============================================================
+
 use serde_json::Value;
 use std::time::Duration;
 use tokio::time::sleep;
