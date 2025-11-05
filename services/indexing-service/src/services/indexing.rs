@@ -24,7 +24,8 @@ fn extract_metadata_from_header(header_content: &str, book_id: u32) -> BookMetad
     let title_re = Regex::new(r"(?i)title:\s*(.+)").unwrap();
     let author_re = Regex::new(r"(?i)author:\s*(.+)").unwrap();
     let lang_re = Regex::new(r"(?i)language:\s*(.+)").unwrap();
-    let year_re = Regex::new(r"(?i)(?:release date|posting date|release|date):\s*.*?(\d{4})").unwrap();
+    let year_re =
+        Regex::new(r"(?i)(?:release date|posting date|release|date):\s*.*?(\d{4})").unwrap();
 
     let title = title_re
         .captures(header_content)

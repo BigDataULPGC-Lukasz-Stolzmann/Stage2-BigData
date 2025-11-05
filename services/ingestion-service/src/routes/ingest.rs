@@ -39,7 +39,7 @@ pub async fn ingest_book(
 }
 
 pub async fn check_status(Path(book_id): Path<u32>) -> Json<StatusResponse> {
-    let datalake_path = create_datalake_path(book_id);
+    let datalake_path = create_datalake_path();
     let header_path = format!("{}/header_{}.txt", datalake_path, book_id);
     let body_path = format!("{}/body_{}.txt", datalake_path, book_id);
 

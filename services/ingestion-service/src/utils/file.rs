@@ -1,12 +1,4 @@
-//! File Utilities
-//!
-//! Provides helper functions for file management and preprocessing.
-//!
-//! ## Responsibilities
-//! - Create structured datalake paths based on date and book ID  
-//! - Split raw Project Gutenberg text files into header and body section
-
-use chrono::Utc;
+use chrono::{Timelike, Utc};
 
 pub const DATALAKE_PATH: &str = "/app/datalake";
 
@@ -30,9 +22,9 @@ pub fn header_body_split(text: &str) -> (String, String) {
     (text.to_string(), String::new())
 }
 
-pub fn create_datalake_path(book_id: u32) -> String {
+pub fn create_datalake_path() -> String {
     let now = Utc::now();
     let date_str = now.format("%Y%m%d").to_string();
-    let subdir = format!("{:02}", book_id % 100);
+    let subdir = format!("{:02}", now.hour());
     format!("{}/{}/{}", DATALAKE_PATH, date_str, subdir)
 }
