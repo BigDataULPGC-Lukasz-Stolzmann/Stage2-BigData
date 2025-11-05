@@ -8,9 +8,13 @@
 #    - End-to-end workflow benchmark
 # ============================================================
 
+# Get the absolute path to the project root
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+BENCHMARK_RESULTS_DIR="$PROJECT_ROOT/benchmark_results"
+
 # Create benchmark results directory
-mkdir -p benchmark_results
-mkdir -p benchmark_results/html_reports
+mkdir -p "$BENCHMARK_RESULTS_DIR"
+mkdir -p "$BENCHMARK_RESULTS_DIR/html_reports"
 
 echo "Starting comprehensive benchmark suite with HTML reports"
 echo "================================================"
@@ -21,7 +25,7 @@ run_service_benchmarks() {
     local benchmark_name=$2
 
     echo "Running $service benchmarks..."
-    cd "services/$service"
+    cd "$PROJECT_ROOT/services/$service"
 
     # Run benchmark
     cargo bench --bench "$benchmark_name"
@@ -29,23 +33,23 @@ run_service_benchmarks() {
     # Copy HTML reports to central location
     if [ -d "target/criterion" ]; then
         echo "📁 Copying HTML reports for $service..."
-        cp -r target/criterion "../../benchmark_results/html_reports/${service}_criterion_reports"
+        cp -r target/criterion "$BENCHMARK_RESULTS_DIR/html_reports/${service}_criterion_reports"
 
         # Create an index file for easy navigation
-        echo "<h2>$service Benchmark Results</h2>" > "../../benchmark_results/html_reports/${service}_index.html"
-        echo "<ul>" >> "../../benchmark_results/html_reports/${service}_index.html"
+        echo "<h2>$service Benchmark Results</h2>" > "$BENCHMARK_RESULTS_DIR/html_reports/${service}_index.html"
+        echo "<ul>" >> "$BENCHMARK_RESULTS_DIR/html_reports/${service}_index.html"
 
         for dir in target/criterion/*/; do
             if [ -d "$dir" ]; then
                 benchmark=$(basename "$dir")
-                echo "<li><a href='${service}_criterion_reports/$benchmark/report/index.html'>$benchmark</a></li>" >> "../../benchmark_results/html_reports/${service}_index.html"
+                echo "<li><a href='${service}_criterion_reports/$benchmark/report/index.html'>$benchmark</a></li>" >> "$BENCHMARK_RESULTS_DIR/html_reports/${service}_index.html"
             fi
         done
 
-        echo "</ul>" >> "../../benchmark_results/html_reports/${service}_index.html"
+        echo "</ul>" >> "$BENCHMARK_RESULTS_DIR/html_reports/${service}_index.html"
     fi
 
-    cd ../..
+    cd "$PROJECT_ROOT"
 }
 
 # Function to run container performance tests
@@ -77,8 +81,8 @@ run_container_benchmarks() {
     esac
 
     # Create simple performance report
-    echo "<h2>$service Container Performance Results</h2>" > "benchmark_results/html_reports/${service}_container_performance.html"
-    echo "<table border='1'><tr><th>Endpoint</th><th>Avg Response Time (ms)</th><th>Success Rate</th></tr>" >> "benchmark_results/html_reports/${service}_container_performance.html"
+    echo "<h2>$service Container Performance Results</h2>" > "$BENCHMARK_RESULTS_DIR/html_reports/${service}_container_performance.html"
+    echo "<table border='1'><tr><th>Endpoint</th><th>Avg Response Time (ms)</th><th>Success Rate</th></tr>" >> "$BENCHMARK_RESULTS_DIR/html_reports/${service}_container_performance.html"
 
     for endpoint in "${endpoints[@]}"; do
         echo "Testing $endpoint..."
@@ -100,18 +104,18 @@ run_container_benchmarks() {
         avg_time=$((total_time / total_requests))
         success_rate=$((success_count * 100 / total_requests))
 
-        echo "<tr><td>$endpoint</td><td>$avg_time</td><td>$success_rate%</td></tr>" >> "benchmark_results/html_reports/${service}_container_performance.html"
+        echo "<tr><td>$endpoint</td><td>$avg_time</td><td>$success_rate%</td></tr>" >> "$BENCHMARK_RESULTS_DIR/html_reports/${service}_container_performance.html"
     done
 
-    echo "</table>" >> "benchmark_results/html_reports/${service}_container_performance.html"
+    echo "</table>" >> "$BENCHMARK_RESULTS_DIR/html_reports/${service}_container_performance.html"
 }
 
 # Function to run system-wide workflow benchmarks
 run_system_benchmarks() {
     echo "Running system-wide workflow benchmarks..."
 
-    echo "<h2>System-wide Workflow Performance</h2>" > "benchmark_results/html_reports/system_workflow_performance.html"
-    echo "<table border='1'><tr><th>Book ID</th><th>Total Time (ms)</th><th>Ingest Time (ms)</th><th>Index Time (ms)</th><th>Search Time (ms)</th><th>Success</th></tr>" >> "benchmark_results/html_reports/system_workflow_performance.html"
+    echo "<h2>System-wide Workflow Performance</h2>" > "$BENCHMARK_RESULTS_DIR/html_reports/system_workflow_performance.html"
+    echo "<table border='1'><tr><th>Book ID</th><th>Total Time (ms)</th><th>Ingest Time (ms)</th><th>Index Time (ms)</th><th>Search Time (ms)</th><th>Success</th></tr>" >> "$BENCHMARK_RESULTS_DIR/html_reports/system_workflow_performance.html"
 
     book_ids=("84" "11" "1342")
 
@@ -154,18 +158,18 @@ run_system_benchmarks() {
             total_time=0; ingest_time=0; index_time=0; search_time=0; success="❌"
         fi
 
-        echo "<tr><td>$book_id</td><td>$total_time</td><td>$ingest_time</td><td>$index_time</td><td>$search_time</td><td>$success</td></tr>" >> "benchmark_results/html_reports/system_workflow_performance.html"
+        echo "<tr><td>$book_id</td><td>$total_time</td><td>$ingest_time</td><td>$index_time</td><td>$search_time</td><td>$success</td></tr>" >> "$BENCHMARK_RESULTS_DIR/html_reports/system_workflow_performance.html"
         sleep 1
     done
 
-    echo "</table>" >> "benchmark_results/html_reports/system_workflow_performance.html"
+    echo "</table>" >> "$BENCHMARK_RESULTS_DIR/html_reports/system_workflow_performance.html"
 }
 
 # Create main index page
 create_main_index() {
     echo "Creating main benchmark index..."
 
-    cat > "benchmark_results/html_reports/index.html" << 'EOF'
+    cat > "$BENCHMARK_RESULTS_DIR/html_reports/index.html" << 'EOF'
 <!DOCTYPE html>
 <html>
 <head>
@@ -236,6 +240,6 @@ create_main_index
 
 echo ""
 echo "Benchmark suite completed!"
-echo "Results location: benchmark_results/html_reports/"
-echo "Open benchmark_results/html_reports/index.html in your browser"
+echo "Results location: $BENCHMARK_RESULTS_DIR/html_reports/"
+echo "Open $BENCHMARK_RESULTS_DIR/html_reports/index.html in your browser"
 echo "Criterion detailed reports are in subdirectories with interactive charts"

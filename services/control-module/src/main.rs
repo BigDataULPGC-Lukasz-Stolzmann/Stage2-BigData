@@ -201,7 +201,7 @@ impl ControlModule {
         let index_response = self.index_book(book_id).await?;
 
         info!("✅ Step 5: Verifying indexing completion...");
-        if index_response.status != "indexed" {
+        if index_response.status != "updated" {
             return Err(format!(
                 "Book {} indexing verification failed - status: {}",
                 book_id, index_response.status

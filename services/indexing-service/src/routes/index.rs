@@ -9,16 +9,13 @@
 //! and uses the [`process_book`] function from the indexing service for core logic.
 
 use crate::models::responses::{IndexResponse, IndexStatusResponse, RebuildResponse};
-use crate::models::storage::StorageBackend;
+use crate::models::storage::{Backend, StorageBackend};
 use crate::services::indexing::process_book;
 use crate::utils::file::DATALAKE_PATH;
 use axum::{extract::Path, http::StatusCode, response::Json};
 use chrono::Utc;
 use std::fs;
-use std::sync::Arc;
 use tracing::{error, info, warn};
-
-type Backend = Arc<dyn StorageBackend + Send + Sync>;
 
 pub async fn index_book(
     Path(book_id): Path<u32>,
@@ -29,7 +26,7 @@ pub async fn index_book(
     match process_book(book_id, &backend).await {
         Ok(()) => Ok(Json(IndexResponse {
             book_id,
-            status: "indexed".to_string(),
+            status: "updated".to_string(),
         })),
         Err(e) => {
             error!("Failed to index book {}: {}", book_id, e);
@@ -102,6 +99,8 @@ pub async fn rebuild_index(
     );
 
     Ok(Json(RebuildResponse {
+        status: "rebuilt".to_string(),
+        indexed_count: books_processed,
         books_processed,
         elapsed_time: format!("{:.2}s", elapsed.as_secs_f64()),
     }))
@@ -114,9 +113,13 @@ pub async fn get_index_status(
 
     let index_size_mb = (book_count * 1000 + word_count * 100) as f64 / 1_000_000.0;
 
+    let timestamp = Utc::now().to_rfc3339();
     Json(IndexStatusResponse {
+        total_books: book_count,
+        total_words: word_count,
+        last_updated: timestamp.clone(),
         books_indexed: book_count,
-        last_update: Utc::now().to_rfc3339(),
+        last_update: timestamp,
         index_size_mb,
     })
 }

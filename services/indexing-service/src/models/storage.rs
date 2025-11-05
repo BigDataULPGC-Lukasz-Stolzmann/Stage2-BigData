@@ -12,7 +12,9 @@
 //!
 //! ## Implementations
 //! - [`RedisBackend`] — lightweight in-memory storage for fast prototyping.
-//! - [`PostgresBackend`] — durable relational storage with SQLx and indexing.use async_trait::async_trait;
+//! - [`PostgresBackend`] — durable relational storage with SQLx and indexing.
+
+use async_trait::async_trait;
 
 use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
@@ -57,7 +59,74 @@ pub trait StorageBackend {
     async fn test_connection(&self) -> Result<(), StorageError>;
 }
 
+/// Enum wrapper for storage backends that allows using the trait without trait objects
+#[derive(Clone)]
+pub enum Backend {
+    Redis(RedisBackend),
+    Postgres(PostgresBackend),
+}
+
+#[async_trait]
+impl StorageBackend for Backend {
+    async fn store_book_metadata(&self, metadata: &BookMetadata) -> Result<(), StorageError> {
+        match self {
+            Backend::Redis(backend) => backend.store_book_metadata(metadata).await,
+            Backend::Postgres(backend) => backend.store_book_metadata(metadata).await,
+        }
+    }
+
+    async fn get_book_metadata(&self, book_id: u32) -> Result<Option<BookMetadata>, StorageError> {
+        match self {
+            Backend::Redis(backend) => backend.get_book_metadata(book_id).await,
+            Backend::Postgres(backend) => backend.get_book_metadata(book_id).await,
+        }
+    }
+
+    async fn is_book_indexed(&self, book_id: u32) -> Result<bool, StorageError> {
+        match self {
+            Backend::Redis(backend) => backend.is_book_indexed(book_id).await,
+            Backend::Postgres(backend) => backend.is_book_indexed(book_id).await,
+        }
+    }
+
+    async fn get_indexed_books(&self) -> Result<HashSet<u32>, StorageError> {
+        match self {
+            Backend::Redis(backend) => backend.get_indexed_books().await,
+            Backend::Postgres(backend) => backend.get_indexed_books().await,
+        }
+    }
+
+    async fn add_word_to_index(&self, word: &str, book_id: u32) -> Result<(), StorageError> {
+        match self {
+            Backend::Redis(backend) => backend.add_word_to_index(word, book_id).await,
+            Backend::Postgres(backend) => backend.add_word_to_index(word, book_id).await,
+        }
+    }
+
+    async fn search_word(&self, word: &str) -> Result<HashSet<u32>, StorageError> {
+        match self {
+            Backend::Redis(backend) => backend.search_word(word).await,
+            Backend::Postgres(backend) => backend.search_word(word).await,
+        }
+    }
+
+    async fn get_stats(&self) -> Result<(usize, usize), StorageError> {
+        match self {
+            Backend::Redis(backend) => backend.get_stats().await,
+            Backend::Postgres(backend) => backend.get_stats().await,
+        }
+    }
+
+    async fn test_connection(&self) -> Result<(), StorageError> {
+        match self {
+            Backend::Redis(backend) => backend.test_connection().await,
+            Backend::Postgres(backend) => backend.test_connection().await,
+        }
+    }
+}
+
 /// Redis-based implementation of the [`StorageBackend`] trait.
+#[derive(Clone)]
 pub struct RedisBackend {
     client: redis::Client,
 }
@@ -168,6 +237,7 @@ impl StorageBackend for RedisBackend {
 }
 
 /// PostgreSQL-based implementation of the [`StorageBackend`] trait.
+#[derive(Clone)]
 pub struct PostgresBackend {
     pool: PgPool,
 }

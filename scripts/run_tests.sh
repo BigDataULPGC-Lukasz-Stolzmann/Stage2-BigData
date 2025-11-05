@@ -11,35 +11,39 @@
 echo "Starting comprehensive test suite"
 echo "===================================="
 
+# Get the absolute path to the project root
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TEST_RESULTS_DIR="$PROJECT_ROOT/test_results"
+
 # Create test results directory
-mkdir -p test_results
+mkdir -p "$TEST_RESULTS_DIR"
 
 # Function to run service tests
 run_service_tests() {
     local service=$1
     echo "Testing $service..."
 
-    cd "services/$service"
+    cd "$PROJECT_ROOT/services/$service"
 
     # Run unit tests (skip if no lib target)
     echo "  Running unit tests..."
     if cargo test --lib --dry-run > /dev/null 2>&1; then
-        cargo test --lib > "../test_results/${service}_unit_tests.log" 2>&1
+        cargo test --lib > "$TEST_RESULTS_DIR/${service}_unit_tests.log" 2>&1
         unit_exit_code=$?
     else
-        echo "No library targets found, skipping unit tests" > "../test_results/${service}_unit_tests.log"
+        echo "No library targets found, skipping unit tests" > "$TEST_RESULTS_DIR/${service}_unit_tests.log"
         unit_exit_code=0
     fi
 
     # Run integration tests
     echo "  Running integration tests..."
-    cargo test --test integration_tests > "../test_results/${service}_integration_tests.log" 2>&1
+    cargo test --test integration_tests > "$TEST_RESULTS_DIR/${service}_integration_tests.log" 2>&1
     integration_exit_code=$?
 
-    cd ../..
+    cd "$PROJECT_ROOT"
 
     if [ $unit_exit_code -eq 0 ]; then
-        if grep -q "No library targets found" "../test_results/${service}_unit_tests.log"; then
+        if grep -q "No library targets found" "$TEST_RESULTS_DIR/${service}_unit_tests.log"; then
             echo "  ⏭️ Unit tests skipped (binary crate)"
         else
             echo "  ✅ Unit tests passed"
@@ -100,7 +104,7 @@ check_services() {
 run_system_tests() {
     echo "Running system integration tests..."
 
-    cargo test --test system_integration_tests > "test_results/system_integration_tests.log" 2>&1
+    cargo test --test system_integration_tests > "$TEST_RESULTS_DIR/system_integration_tests.log" 2>&1
     exit_code=$?
 
     if [ $exit_code -eq 0 ]; then
@@ -117,7 +121,7 @@ run_system_tests() {
 generate_test_report() {
     echo "Generating test report..."
 
-    cat > "test_results/test_report.html" << 'EOF'
+    cat > "$TEST_RESULTS_DIR/test_report.html" << 'EOF'
 <!DOCTYPE html>
 <html>
 <head>
@@ -138,59 +142,59 @@ generate_test_report() {
 EOF
 
     # Add individual service test results
-    echo "<div class='test-section'><h2>Individual Service Tests</h2>" >> "test_results/test_report.html"
+    echo "<div class='test-section'><h2>Individual Service Tests</h2>" >> "$TEST_RESULTS_DIR/test_report.html"
 
     for service in "ingestion-service" "indexing-service" "search-service"; do
-        echo "<h3>$service</h3>" >> "test_results/test_report.html"
+        echo "<h3>$service</h3>" >> "$TEST_RESULTS_DIR/test_report.html"
 
-        if [ -f "test_results/${service}_unit_tests.log" ]; then
-            if grep -q "test result: ok" "test_results/${service}_unit_tests.log"; then
-                echo "<p class='pass'>✅ Unit Tests: PASSED</p>" >> "test_results/test_report.html"
+        if [ -f "$TEST_RESULTS_DIR/${service}_unit_tests.log" ]; then
+            if grep -q "test result: ok" "$TEST_RESULTS_DIR/${service}_unit_tests.log"; then
+                echo "<p class='pass'>✅ Unit Tests: PASSED</p>" >> "$TEST_RESULTS_DIR/test_report.html"
             else
-                echo "<p class='fail'>❌ Unit Tests: FAILED</p>" >> "test_results/test_report.html"
+                echo "<p class='fail'>❌ Unit Tests: FAILED</p>" >> "$TEST_RESULTS_DIR/test_report.html"
             fi
-            echo "<a href='${service}_unit_tests.log' class='log-link'>Unit Test Log</a>" >> "test_results/test_report.html"
+            echo "<a href='${service}_unit_tests.log' class='log-link'>Unit Test Log</a>" >> "$TEST_RESULTS_DIR/test_report.html"
         fi
 
-        if [ -f "test_results/${service}_integration_tests.log" ]; then
-            if grep -q "test result: ok" "test_results/${service}_integration_tests.log"; then
-                echo "<p class='pass'>✅ Integration Tests: PASSED</p>" >> "test_results/test_report.html"
+        if [ -f "$TEST_RESULTS_DIR/${service}_integration_tests.log" ]; then
+            if grep -q "test result: ok" "$TEST_RESULTS_DIR/${service}_integration_tests.log"; then
+                echo "<p class='pass'>✅ Integration Tests: PASSED</p>" >> "$TEST_RESULTS_DIR/test_report.html"
             else
-                echo "<p class='fail'>❌ Integration Tests: FAILED</p>" >> "test_results/test_report.html"
+                echo "<p class='fail'>❌ Integration Tests: FAILED</p>" >> "$TEST_RESULTS_DIR/test_report.html"
             fi
-            echo "<a href='${service}_integration_tests.log' class='log-link'>Integration Test Log</a>" >> "test_results/test_report.html"
+            echo "<a href='${service}_integration_tests.log' class='log-link'>Integration Test Log</a>" >> "$TEST_RESULTS_DIR/test_report.html"
         fi
     done
 
-    echo "</div>" >> "test_results/test_report.html"
+    echo "</div>" >> "$TEST_RESULTS_DIR/test_report.html"
 
     # Add system test results
-    echo "<div class='test-section'><h2>System Integration Tests</h2>" >> "test_results/test_report.html"
+    echo "<div class='test-section'><h2>System Integration Tests</h2>" >> "$TEST_RESULTS_DIR/test_report.html"
 
-    if [ -f "test_results/system_integration_tests.log" ]; then
-        if grep -q "test result: ok" "test_results/system_integration_tests.log"; then
-            echo "<p class='pass'>✅ System Integration Tests: PASSED</p>" >> "test_results/test_report.html"
+    if [ -f "$TEST_RESULTS_DIR/system_integration_tests.log" ]; then
+        if grep -q "test result: ok" "$TEST_RESULTS_DIR/system_integration_tests.log"; then
+            echo "<p class='pass'>✅ System Integration Tests: PASSED</p>" >> "$TEST_RESULTS_DIR/test_report.html"
         else
-            echo "<p class='fail'>❌ System Integration Tests: FAILED</p>" >> "test_results/test_report.html"
+            echo "<p class='fail'>❌ System Integration Tests: FAILED</p>" >> "$TEST_RESULTS_DIR/test_report.html"
         fi
-        echo "<a href='system_integration_tests.log' class='log-link'>System Test Log</a>" >> "test_results/test_report.html"
+        echo "<a href='system_integration_tests.log' class='log-link'>System Test Log</a>" >> "$TEST_RESULTS_DIR/test_report.html"
     fi
 
-    echo "</div>" >> "test_results/test_report.html"
+    echo "</div>" >> "$TEST_RESULTS_DIR/test_report.html"
 
     # Add instructions
-    echo "<div class='test-section'>" >> "test_results/test_report.html"
-    echo "<h2>Instructions</h2>" >> "test_results/test_report.html"
-    echo "<ul>" >> "test_results/test_report.html"
-    echo "<li><strong>Unit Tests:</strong> Test individual functions and modules in isolation</li>" >> "test_results/test_report.html"
-    echo "<li><strong>Integration Tests:</strong> Test API endpoints and service interactions</li>" >> "test_results/test_report.html"
-    echo "<li><strong>System Tests:</strong> Test complete end-to-end workflows</li>" >> "test_results/test_report.html"
-    echo "</ul>" >> "test_results/test_report.html"
-    echo "<p>To run tests manually:</p>" >> "test_results/test_report.html"
-    echo "<pre>./scripts/run_tests.sh</pre>" >> "test_results/test_report.html"
-    echo "</div>" >> "test_results/test_report.html"
+    echo "<div class='test-section'>" >> "$TEST_RESULTS_DIR/test_report.html"
+    echo "<h2>Instructions</h2>" >> "$TEST_RESULTS_DIR/test_report.html"
+    echo "<ul>" >> "$TEST_RESULTS_DIR/test_report.html"
+    echo "<li><strong>Unit Tests:</strong> Test individual functions and modules in isolation</li>" >> "$TEST_RESULTS_DIR/test_report.html"
+    echo "<li><strong>Integration Tests:</strong> Test API endpoints and service interactions</li>" >> "$TEST_RESULTS_DIR/test_report.html"
+    echo "<li><strong>System Tests:</strong> Test complete end-to-end workflows</li>" >> "$TEST_RESULTS_DIR/test_report.html"
+    echo "</ul>" >> "$TEST_RESULTS_DIR/test_report.html"
+    echo "<p>To run tests manually:</p>" >> "$TEST_RESULTS_DIR/test_report.html"
+    echo "<pre>./scripts/run_tests.sh</pre>" >> "$TEST_RESULTS_DIR/test_report.html"
+    echo "</div>" >> "$TEST_RESULTS_DIR/test_report.html"
 
-    echo "</body></html>" >> "test_results/test_report.html"
+    echo "</body></html>" >> "$TEST_RESULTS_DIR/test_report.html"
 }
 
 # Main execution

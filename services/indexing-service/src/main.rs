@@ -20,7 +20,6 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 use tracing::{error, info};
@@ -30,13 +29,11 @@ mod routes;
 mod services;
 mod utils;
 
-use models::storage::{PostgresBackend, RedisBackend, StorageBackend};
+use models::storage::{Backend, PostgresBackend, RedisBackend, StorageBackend};
 use routes::{
     health::health_check,
     index::{get_index_status, index_book, rebuild_index},
 };
-
-type Backend = Arc<dyn StorageBackend + Send + Sync>;
 
 #[tokio::main]
 async fn main() {
@@ -45,7 +42,7 @@ async fn main() {
         .init();
 
     let backend_type = std::env::var("BACKEND_TYPE").unwrap_or_else(|_| "redis".to_string());
-    let backend: Backend = match backend_type.to_lowercase().as_str() {
+    let backend = match backend_type.to_lowercase().as_str() {
         "postgres" | "postgresql" => {
             let database_url = std::env::var("DATABASE_URL")
                 .unwrap_or_else(|_| "postgresql://user:password@postgres_db:5432/datamart_db".to_string());
@@ -54,7 +51,7 @@ async fn main() {
             let postgres_backend = PostgresBackend::new(&database_url).await
                 .expect("Failed to connect to PostgreSQL");
 
-            Arc::new(postgres_backend)
+            Backend::Postgres(postgres_backend)
         }
         "redis" | _ => {
             let redis_url = std::env::var("REDIS_URL")
@@ -64,7 +61,7 @@ async fn main() {
             let redis_backend = RedisBackend::new(&redis_url)
                 .expect("Failed to connect to Redis");
 
-            Arc::new(redis_backend)
+            Backend::Redis(redis_backend)
         }
     };
 

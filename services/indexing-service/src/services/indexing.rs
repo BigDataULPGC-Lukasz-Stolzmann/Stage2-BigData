@@ -12,13 +12,12 @@
 //! - Store metadata and word-to-book relationships in the backend  
 //! - Ensure consistent indexing for rebuild and incremental ingestion
 
-use crate::models::storage::{BookMetadata, StorageBackend};
+use crate::models::storage::{Backend, BookMetadata, StorageBackend};
 use crate::utils::file::find_book_files;
 use crate::utils::text::tokenize_text;
 use regex::Regex;
 use std::collections::HashSet;
 use std::fs;
-use std::sync::Arc;
 
 fn extract_metadata_from_header(header_content: &str, book_id: u32) -> BookMetadata {
     let title_re = Regex::new(r"(?i)title:\s*(.+)").unwrap();
@@ -63,7 +62,7 @@ fn extract_metadata_from_header(header_content: &str, book_id: u32) -> BookMetad
 
 pub async fn process_book(
     book_id: u32,
-    backend: &Arc<dyn StorageBackend + Send + Sync>,
+    backend: &Backend,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let (header_path, body_path) =
         find_book_files(book_id).ok_or(format!("Book {} files not found", book_id))?;

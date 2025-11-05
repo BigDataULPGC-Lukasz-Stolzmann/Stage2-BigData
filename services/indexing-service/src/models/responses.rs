@@ -7,7 +7,9 @@
 //! - `HealthResponse` — Reports service health and uptime.
 //! - `IndexResponse` — Returned after indexing a single book.
 //! - `RebuildResponse` — Summarizes results of a full index rebuild.
-//! - `IndexStatusResponse` — Provides current indexing statistics.use serde::{Deserialize, Serialize};
+//! - `IndexStatusResponse` — Provides current indexing statistics.
+
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct HealthResponse {
@@ -23,12 +25,17 @@ pub struct IndexResponse {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RebuildResponse {
+    pub status: String,
+    pub indexed_count: usize,
     pub books_processed: usize,
     pub elapsed_time: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct IndexStatusResponse {
+    pub total_books: usize,
+    pub total_words: usize,
+    pub last_updated: String,
     pub books_indexed: usize,
     pub last_update: String,
     pub index_size_mb: f64,
