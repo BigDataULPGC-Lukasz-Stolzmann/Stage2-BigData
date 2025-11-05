@@ -82,20 +82,20 @@ services:
     networks:
       - microservices
 
-  control-module:
-    build: ./control-module
-    container_name: control-module
-    environment:
-      - RUST_LOG=info
-    depends_on:
-      - ingestion-service
-      - indexing-service
-      - search-service
-    networks:
-      - microservices
-    # Only start when explicitly needed
-    profiles:
-      - control
+  # control-module:
+  #   build: ./control-module
+  #   container_name: control-module
+  #   environment:
+  #     - RUST_LOG=info
+  #   depends_on:
+  #     - ingestion-service
+  #     - indexing-service
+  #     - search-service
+  #   networks:
+  #     - microservices
+  #   # Only start when explicitly needed
+  #   profiles:
+  #     - control
 
 volumes:
   redis_data:
